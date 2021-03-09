@@ -13,15 +13,28 @@ while True:
     recv_cmd = connection_socket.recv(1024).decode()
     recv_cmd = recv_cmd.split(' ')
     #insert error handling at some point
+    msg = ""
 
 
-    if recv_cmd[0] == "LIST":
+    if recv_cmd[0] == "CONNECT":
+        msg = "Connected to server. Awaiting commands..."
+        connection_socket.send(msg.encode())
+    elif recv_cmd[0] == "LIST":
         # os.path
         file_list = listdir("./server/files")
+        for filename in file_list:
+            msg = msg + " " + filename
         # print(listdir("./server/files"))
-        connection_socket.send(file_list[0].encode())
+        connection_socket.send(msg.encode())
         # connection_socket.send(fi)
         # connection_socket.sendfile(recv_cmd[1])
+    elif recv_cmd[0] == RETRIEVE:
+        #logic stuff
+    elif recv_cmd[0] == STORE:
+        #logic stuff
+    else:
+        msg = "Invalid command. Please enter a valid command."
+
     
     
 
