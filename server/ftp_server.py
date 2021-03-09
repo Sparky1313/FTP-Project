@@ -15,7 +15,13 @@ while True:
 
 
     if recv_cmd[0] == "LIST":
-        os.path
-        files = []
-        listdir(getcwd)
+        # os.path
+        file_list = listdir("./server/files")
+        # print(listdir("./server/files"))
+        connection_socket.sendmsg(file_list)
+        # connection_socket.send(fi)
+        # connection_socket.sendfile(recv_cmd[1])
+    
+    
+
 
