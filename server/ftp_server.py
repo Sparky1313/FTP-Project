@@ -9,31 +9,41 @@ server_socket.bind((server_host, server_port))
 server_socket.listen(1)
 
 while True:
+    connection_socket = None
     connection_socket, addr = server_socket.accept()
-    recv_cmd = connection_socket.recv(1024).decode()
-    recv_cmd = recv_cmd.split(' ')
-    #insert error handling at some point
-    msg = ""
+    if connection_socket is not None:
+        is_connected = True
+
+    while is_connected == True:
+        recv_cmd = connection_socket.recv(1024).decode()
+        recv_cmd = recv_cmd.split(' ')
+        #insert error handling at some point
+        msg = ""
 
 
-    if recv_cmd[0] == "CONNECT":
-        msg = "Connected to server. Awaiting commands..."
-        connection_socket.send(msg.encode())
-    elif recv_cmd[0] == "LIST":
-        # os.path
-        file_list = listdir("./server/files")
-        for filename in file_list:
-            msg = msg + " " + filename
-        # print(listdir("./server/files"))
-        connection_socket.send(msg.encode())
-        # connection_socket.send(fi)
-        # connection_socket.sendfile(recv_cmd[1])
-    elif recv_cmd[0] == RETRIEVE:
-        #logic stuff
-    elif recv_cmd[0] == STORE:
-        #logic stuff
-    else:
-        msg = "Invalid command. Please enter a valid command."
+        if recv_cmd[0] == "CONNECT":
+            msg = "Connected to server. Awaiting commands..."
+            connection_socket.send(msg.encode())
+        elif recv_cmd[0] == "LIST":
+            # os.path
+            file_list = listdir("./server/files")
+            for filename in file_list:
+                msg = msg + " " + filename
+            # print(listdir("./server/files"))
+            connection_socket.send(msg.encode())
+            # connection_socket.send(fi)
+            # connection_socket.sendfile(recv_cmd[1])
+        elif recv_cmd[0] == "RETRIEVE":
+            print('')
+            #logic stuff
+        elif recv_cmd[0] == "STORE":
+            print('')
+            #logic stuff
+        elif recv_cmd[0] == "QUIT":
+            connection_socket.close()
+            is_connected = False
+        else:
+            msg = "Invalid command. Please enter a valid command."
 
     
     
