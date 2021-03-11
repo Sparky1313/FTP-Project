@@ -34,6 +34,17 @@ while True:
             # connection_socket.send(fi)
             # connection_socket.sendfile(recv_cmd[1])
         elif recv_cmd[0] == "RETRIEVE":
+            file_list = listdir("./server/files")
+            for filename in file_list:
+                #check if the file name matches what the user sent
+                if filename == recv_cmd[1]:
+                    msg = "Found " + filename
+                else:
+                    msg = "File not found"
+
+                connection_socket.send(msg.encode())
+                break
+
             print('')
             #logic stuff
         elif recv_cmd[0] == "STORE":

@@ -28,7 +28,12 @@ while True:
     elif command_args[0] == "RETRIEVE":
         if command_args[1] is not None:
             # logic
-            print('')
+            #send both command arguments to server (RETRIEVE/filename)
+            #put the commands together in one string to be sent to the server
+            msg = command_args[0] + " " + command_args[1]
+            client_socket.send(msg.encode())
+            payload = client_socket.recv(1024)
+            print("Server Return Message: ", payload.decode())
         else:
             print("Invalid arguments for \'RETRIEVE\'")
     elif command_args[0] == "STORE":
