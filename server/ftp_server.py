@@ -38,11 +38,12 @@ while True:
             for filename in file_list:
                 #check if the file name matches what the user sent
                 if filename == recv_cmd[1]:
-                    msg = "Found " + filename
+                    file = open("./server/files/" + filename)
+                    data = file.read()
                 else:
-                    msg = "File not found"
+                    data = "File Not Found"
 
-                connection_socket.send(msg.encode())
+                connection_socket.send(data.encode())
                 break
 
             print('')

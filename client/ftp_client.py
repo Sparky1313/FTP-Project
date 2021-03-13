@@ -17,6 +17,7 @@ while True:
             client_socket = socket(AF_INET, SOCK_STREAM)
             client_socket.connect((server_name, int(server_port)))
             is_connected = True
+            print("Connection to Server " + command_args[1] + " Port " + command_args[2] + " Established Successfully")
         else:
             print("Invalid arguments for \'CONNECT\'")
     elif is_connected == False:
@@ -28,12 +29,20 @@ while True:
     elif command_args[0] == "RETRIEVE":
         if command_args[1] is not None:
             # logic
-            #send both command arguments to server (RETRIEVE/filename)
             #put the commands together in one string to be sent to the server
             msg = command_args[0] + " " + command_args[1]
             client_socket.send(msg.encode())
             payload = client_socket.recv(1024)
-            print("Server Return Message: ", payload.decode())
+            data = payload.decode()
+            if(data == "File Not Found"):
+                #if the file wasn't found, just print the return message from the server
+                print(data)
+            else:
+                #create a new file to store the data in recieved from the server
+                file = open("./client/files/" + command_args[1], "w")
+                file.write(data)
+                file.close()
+                print(command_args[1] + " Retrieved Successfully")
         else:
             print("Invalid arguments for \'RETRIEVE\'")
     elif command_args[0] == "STORE":
