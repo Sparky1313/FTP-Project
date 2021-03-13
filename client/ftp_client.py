@@ -27,6 +27,7 @@ while True:
         client_socket.send(command_args[0].encode())
         payload = client_socket.recv(1024)
         print("Files on server are: ", payload.decode())
+
     elif command_args[0] == "RETRIEVE":
         if command_args[1] is not None:
             # logic
@@ -34,14 +35,25 @@ while True:
             msg = command_args[0] + " " + command_args[1]
             client_socket.send(msg.encode())
             payload = client_socket.recv(1024)
-            data = payload.decode()
-            if(data == "File Not Found"):
+            payload = payload.decode()
+
+            if payload == "File Not Found":
                 #if the file wasn't found, just print the return message from the server
-                print(data)
+                print(payload)
             else:
+                print(payload)
                 #create a new file to store the data in recieved from the server
-                file = open("./client/files/" + command_args[1], "w")
-                file.write(data)
+                file = open("./client/files/" + command_args[1], "wb")
+
+                while True:
+                    payload = client_socket.recv(1024)
+                    file.write(payload)
+
+                    if len(payload) < 1024:
+                        print("Done")
+                        file.close()
+                        break
+
                 file.close()
                 print(command_args[1] + " Retrieved Successfully")
         else:
