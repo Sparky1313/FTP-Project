@@ -1,4 +1,5 @@
 from socket import *
+import os.path
 is_connected = False
 
 print("Welcome to your custom FTP client!")
@@ -47,8 +48,39 @@ while True:
             print("Invalid arguments for \'RETRIEVE\'")
     elif command_args[0] == "STORE":
         if command_args[1] is not None:
-            # logic
-            print('')
+            print(command_args[1])
+            msg = command_args[0] + " " + os.path.split(command_args[1])[1]
+            client_socket.send(msg.encode())
+            file = open(command_args[1], 'rb')
+
+            while True:
+                payload = file.read(1024)
+                if not payload:
+                    print("Done")
+                    file.close()
+                    break
+                client_socket.send(payload)
+                print(payload)
+            # payload = file.read()
+            # file.close()
+            # filename = os.path.split(command_args[1])
+           
+            print(os.path.split(command_args[1]))
+            
+            # client_socket.send(payload)
+            
+            # print(data)
+            # file_list = listdir("./client/files")
+            # for filename in file_list:
+            #     #check if the file name matches what the user sent
+            #     if filename == recv_cmd[1]:
+            #         file = open("./client/files/" + filename)
+            #         data = file.read()
+            #     else:
+            #         data = "File Not Found"
+
+            #     connection_socket.send(data.encode())
+            #     break
         else:
             print("Invalid arguments for \'STORE\'")
     elif command_args[0] == "QUIT":

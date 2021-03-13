@@ -40,6 +40,7 @@ while True:
                 if filename == recv_cmd[1]:
                     file = open("./server/files/" + filename)
                     data = file.read()
+                    file.close()
                 else:
                     data = "File Not Found"
 
@@ -49,7 +50,17 @@ while True:
             print('')
             #logic stuff
         elif recv_cmd[0] == "STORE":
-            print('')
+            file = open("./server/files/" + recv_cmd[1], 'wb')
+            
+            while True:
+                data = connection_socket.recv(1024)
+                if not data:
+                    print("done")
+                    file.close()
+                    break
+                file.write(data)
+            # file.close()
+            
             #logic stuff
         elif recv_cmd[0] == "QUIT":
             connection_socket.close()
