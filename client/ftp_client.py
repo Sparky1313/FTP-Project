@@ -1,5 +1,6 @@
 from socket import *
 import os.path
+from os import listdir
 is_connected = False
 
 print("Welcome to your custom FTP client!")
@@ -9,6 +10,7 @@ while True:
     command_args = user_command.split(' ')
     payload = None
 
+    #user command to connect to the server
     if command_args[0] == "CONNECT":
         if is_connected == True:
             print("Cannot connect to another server while already connected one server.")
@@ -21,15 +23,43 @@ while True:
             print("Connection to Server " + command_args[1] + " Port " + command_args[2] + " Established Successfully")
         else:
             print("Invalid arguments for \'CONNECT\'")
+    
+    #ensure that the user can't execute any command other thatn "CONNECT" if no connection is set up yet
     elif is_connected == False:
         print("Cannot make any other commands besides \'CONNECT\' until client is connected to a server.")
+
+    #user command to list all files stored on the server
     elif command_args[0] == "LIST":
+        #check if the user supplied more than 1 argument
+        if len(command_args) != 1:
+            print("Invalid arguments for \'LIST\'")
+            continue
+
         client_socket.send(command_args[0].encode())
         payload = client_socket.recv(1024)
         print("Files on server are: ", payload.decode())
 
+    #user command to retrieve a file from the server
     elif command_args[0] == "RETRIEVE":
-        if command_args[1] is not None:
+        #check if the user supplied the right number of arguments
+        if len(command_args) == 2:
+
+            #if the user already has this file, ask if they want to replace it
+            file_list = listdir("./client/files")
+            if command_args[1] in file_list:
+                user_command = input("This file already exists on this client. Want to replace the existing file? (Y/N): ")
+                
+                while True:
+                    if user_command == 'Y' or user_command == 'N':
+                        break
+                    else:
+                        user_command = input("Please enter Y or N: ")
+
+            #if the file already exists and the user doesn't want to replace it, just get the next command
+            if user_command == 'N':
+                print("RETRIEVE Command Cancelled")
+                continue
+
             # logic
             #put the commands together in one string to be sent to the server
             msg = command_args[0] + " " + command_args[1]
@@ -58,12 +88,22 @@ while True:
                 print(command_args[1] + " Retrieved Successfully")
         else:
             print("Invalid arguments for \'RETRIEVE\'")
+    
+    #user command to store a file from the client onto the server
     elif command_args[0] == "STORE":
-        if command_args[1] is not None:
+        #check if the user supplied the right number of arguments
+        if len(command_args) == 2:
+
+            #if the file doesn't exist, let the user know and get the next command
+            file_list = listdir("./client/files")
+            if command_args[1] not in file_list:
+                print(command_args[1] + " Does Not Exist On The Client")
+                continue     
+
             print(command_args[1])
             msg = command_args[0] + " " + os.path.split(command_args[1])[1]
             client_socket.send(msg.encode())
-            file = open(command_args[1], 'rb')
+            file = open("./client/files/" + command_args[1], 'rb')
 
             while True:
                 payload = file.read(1024)
@@ -96,10 +136,14 @@ while True:
         else:
             print("Invalid arguments for \'STORE\'")
     elif command_args[0] == "QUIT":
-        client_socket.send(command_args[0].encode())
-        client_socket.close()
-        is_connected = False
-        print("Client disconnected from server")
+        #check if the user supplied the right number of arguments
+        if len(command_args) == 1:
+            client_socket.send(command_args[0].encode())
+            client_socket.close()
+            is_connected = False
+            print("Client disconnected from server")
+        else:
+            print("Invalid arguments for \'QUIT\'")
     else:
         print("Invalid command. Valid commands are \'CONNECT\', \'LIST\', \'RETRIEVE\', \'STORE\', and \'EXIT\'")
 
