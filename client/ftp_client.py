@@ -45,7 +45,7 @@ while True:
         if len(command_args) == 2:
 
             #if the user already has this file, ask if they want to replace it
-            file_list = listdir("./client/files")
+            file_list = listdir("./client/downloads")
             if command_args[1] in file_list:
                 user_command = input("This file already exists on this client. Want to replace the existing file? (Y/N): ")
                 
@@ -73,7 +73,7 @@ while True:
             else:
                 print(payload)
                 #create a new file to store the data in recieved from the server
-                file = open("./client/files/" + command_args[1], "wb")
+                file = open("./client/downloads/" + command_args[1], "wb")
 
                 while True:
                     payload = client_socket.recv(1024)
@@ -94,16 +94,15 @@ while True:
         #check if the user supplied the right number of arguments
         if len(command_args) == 2:
 
-            #if the file doesn't exist, let the user know and get the next command
-            file_list = listdir("./client/files")
-            if command_args[1] not in file_list:
-                print(command_args[1] + " Does Not Exist On The Client")
-                continue     
+            try:
+                file = open(command_args[1], 'rb')
+            except IOError:
+                print("File does not exist on the client")
+                continue
 
             print(command_args[1])
             msg = command_args[0] + " " + os.path.split(command_args[1])[1]
             client_socket.send(msg.encode())
-            file = open("./client/files/" + command_args[1], 'rb')
 
             while True:
                 payload = file.read(1024)
