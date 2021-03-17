@@ -1,4 +1,4 @@
 {
+    // Put absolute path of the virtual environment on your machine
     "python.pythonPath": "C:\\Users\\Derek\\AppData\\Local\\Programs\\Python\\Python39\\python.exe"
-    // "python.pythonPath": "../.venv/Scripts/python.exe"
 }
