@@ -13,8 +13,9 @@ while True:
     #user command to connect to the server
     if command_args[0] == "CONNECT":
         if is_connected == True:
-            print("Cannot connect to another server while already connected one server.")
+            print("Cannot connect to another server while already connected to a server.")
         elif len(command_args) == 3 and (command_args[1] is not None or command_args[2] is not None):
+            #set up connection with the server and port the user specified
             server_name = command_args[1]
             server_port = command_args[2]
             client_socket = socket(AF_INET, SOCK_STREAM)
@@ -34,7 +35,7 @@ while True:
         if len(command_args) != 1:
             print("Invalid arguments for \'LIST\'")
             continue
-
+        
         client_socket.send(command_args[0].encode())
         payload = client_socket.recv(1024)
         print("Files on server are: ", payload.decode())
@@ -60,7 +61,6 @@ while True:
                 print("RETRIEVE Command Cancelled")
                 continue
 
-            # logic
             #put the commands together in one string to be sent to the server
             msg = command_args[0] + " " + command_args[1]
             client_socket.send(msg.encode())
@@ -75,6 +75,7 @@ while True:
                 #create a new file to store the data in recieved from the server
                 file = open("./client/downloads/" + command_args[1], "wb")
 
+                #loop and recieve the requested data until the server is done sending 
                 while True:
                     payload = client_socket.recv(1024)
                     file.write(payload)
@@ -94,46 +95,29 @@ while True:
         #check if the user supplied the right number of arguments
         if len(command_args) == 2:
 
+            #catch exception if the file being opened doesn't exist
             try:
                 file = open(command_args[1], 'rb')
             except IOError:
                 print("File does not exist on the client")
                 continue
 
-            print(command_args[1])
             msg = command_args[0] + " " + os.path.split(command_args[1])[1]
             client_socket.send(msg.encode())
 
+            #continuously read from the file and send the data to the server until there is no more to send
             while True:
                 payload = file.read(1024)
                 if not payload:
-                    print("Done")
+                    print("File Stored Successfully")
                     file.close()
                     break
                 client_socket.send(payload)
-                print(payload)
-            # payload = file.read()
-            # file.close()
-            # filename = os.path.split(command_args[1])
-           
-            print(os.path.split(command_args[1]))
             
-            # client_socket.send(payload)
-            
-            # print(data)
-            # file_list = listdir("./client/files")
-            # for filename in file_list:
-            #     #check if the file name matches what the user sent
-            #     if filename == recv_cmd[1]:
-            #         file = open("./client/files/" + filename)
-            #         data = file.read()
-            #     else:
-            #         data = "File Not Found"
-
-            #     connection_socket.send(data.encode())
-            #     break
         else:
             print("Invalid arguments for \'STORE\'")
+
+    #user command to quit the FTP session
     elif command_args[0] == "QUIT":
         #check if the user supplied the right number of arguments
         if len(command_args) == 1:
@@ -145,11 +129,3 @@ while True:
             print("Invalid arguments for \'QUIT\'")
     else:
         print("Invalid command. Valid commands are \'CONNECT\', \'LIST\', \'RETRIEVE\', \'STORE\', and \'EXIT\'")
-
-# server_name = "127.0.0.1"
-# server_port = 12000
-
-# sentence = input("Input lowercase sentence:")
-# client_socket.send(sentence.encode())
-# modifiedSentence = client_socket.recv(1024)
-# print('From Server: ', modifiedSentence.decode())
