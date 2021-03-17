@@ -52,8 +52,6 @@ while True:
                         break
 
                     connection_socket.send(payload)
-                #file.close()
-                payload = "File transfer completed."
 
             else:
                 #let client know the file wasn't found

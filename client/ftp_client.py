@@ -24,7 +24,7 @@ while True:
             try:
                 client_socket.connect((server_name, int(server_port)))
             except OSError as error_msg:
-                print("Couldn't connect to Server" + command_args[1] + " Port " + command_args[2] + ".  Error: " + str(error_msg))
+                print("Couldn't connect to Server " + command_args[1] + " Port " + command_args[2] + ".  Error: " + str(error_msg))
                 client_socket.close()
                 continue
 
@@ -93,7 +93,6 @@ while True:
                         file.close()
                         break
 
-                file.close()
                 print(command_args[1] + " Retrieved Successfully")
         else:
             print("Invalid arguments for \'RETRIEVE\'")
