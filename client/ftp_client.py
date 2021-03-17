@@ -8,7 +8,7 @@ print("Welcome to your custom FTP client!")
 while True:
     user_command = input("Enter command: ")
     command_args = user_command.split(' ')
-    payload = None
+    payload = ""
 
     #user command to connect to the server
     if command_args[0] == "CONNECT":
@@ -19,7 +19,15 @@ while True:
             server_name = command_args[1]
             server_port = command_args[2]
             client_socket = socket(AF_INET, SOCK_STREAM)
-            client_socket.connect((server_name, int(server_port)))
+            
+            #try to connect to server and if the connection fails report the error to the user
+            try:
+                client_socket.connect((server_name, int(server_port)))
+            except OSError as error_msg:
+                print("Couldn't connect to Server" + command_args[1] + " Port " + command_args[2] + ".  Error: " + str(error_msg))
+                client_socket.close()
+                continue
+
             is_connected = True
             print("Connection to Server " + command_args[1] + " Port " + command_args[2] + " Established Successfully")
         else:
@@ -128,4 +136,4 @@ while True:
         else:
             print("Invalid arguments for \'QUIT\'")
     else:
-        print("Invalid command. Valid commands are \'CONNECT\', \'LIST\', \'RETRIEVE\', \'STORE\', and \'EXIT\'")
+        print("Invalid command. Valid commands are \'CONNECT\', \'LIST\', \'RETRIEVE\', \'STORE\', and \'QUIT\'")

@@ -20,7 +20,7 @@ while True:
         #read command sent by the client
         recv_cmd = connection_socket.recv(1024).decode()
         recv_cmd = recv_cmd.split(' ')
-        payload = None
+        payload = ""
 
         #client command to list the files currently on the server
         if recv_cmd[0] == "LIST":
